@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech Learning Progress Tracker</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Tech Learning Tracker</h1>
+            <p>Welcome, Isaac! Schedule your new tasks and track your progress</p>
+        </div>
+
+        <div class="stats" id="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalSubjects">0</div>
+                <div class="stat-label">Active Subjects</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="completedTasks">0</div>
+                <div class="stat-label">Tasks Completed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="avgProgress">0%</div>
+                <div class="stat-label">Average Progress</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn" onclick="openModal()">+ Add New Subject</button>
+            <button class="btn btn-secondary" onclick="exportData()">📊 Export Progress</button>
+            <button class="btn btn-danger" onclick="clearAllData()">🗑️ Clear All Data</button>
+        </div>
+
+        <div class="subjects-grid" id="subjectsGrid">
+            <!-- Subject cards will be dynamically added here -->
+        </div>
+    </div>
+
+    <!-- Modal for adding new subjects -->
+    <div class="modal" id="subjectModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+            <div class="modal-header">
+                <h2>Add New Learning Subject</h2>
+                <p>Start tracking your progress on a new technology or skill</p>
+            </div>
+            <div class="form-group">
+                <label for="subjectName">Subject/Technology Name</label>
+                <input type="text" id="subjectName" placeholder="e.g., React, Python, Docker, AWS">
+            </div>
+            <div class="form-group">
+                <label for="priority">Priority Level</label>
+                <select id="priority">
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="targetDate">Target Completion Date</label>
+                <input type="date" id="targetDate">
+            </div>
+            <button class="btn" onclick="addSubject()">Create Subject</button>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html> 
