@@ -5,7 +5,7 @@ import { compare } from 'bcryptjs';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   pages: {
-    signIn: '/auth/login',
+    signIn: '/login',
   },
   providers: [
     Credentials({

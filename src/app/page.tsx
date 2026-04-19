@@ -14,7 +14,7 @@ export default function Home() {
     if (session) {
       router.push('/dashboard');
     } else {
-      router.push('/auth/login');
+      router.push('/login');
     }
   }, [session, status, router]);
 

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { hash } from 'bcryptjs';
 import { z } from 'zod';
 
 const registerSchema = z.object({
@@ -24,11 +25,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create new user
+    // Create new user with server-side hashed password
+    const hashedPassword = await hash(validated.password, 10);
     const user = await prisma.user.create({
       data: {
         email: validated.email,
-        password: validated.password,
+        password: hashedPassword,
       },
     });
 
