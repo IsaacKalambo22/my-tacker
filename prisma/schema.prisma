@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Priority {
+  High
+  Medium
+  Low
+}
+
+model User {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  password  String
+  createdAt DateTime  @default(now())
+  subjects  Subject[]
+}
+
+model Subject {
+  id         String    @id @default(uuid())
+  name       String
+  priority   Priority  @default(Medium)
+  targetDate DateTime?
+  startDate  DateTime  @default(now())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  phases     Phase[]
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([userId])
+}
+
+model Phase {
+  id         String    @id @default(uuid())
+  name       String
+  subjectId  String
+  subject    Subject   @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  tasks      Task[]
+  order      Int       @default(0)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([subjectId])
+}
+
+model Task {
+  id           String    @id @default(uuid())
+  text         String
+  completed    Boolean   @default(false)
+  completedAt  DateTime?
+  phaseId      String
+  phase        Phase     @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+  order        Int       @default(0)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([phaseId])
+}
