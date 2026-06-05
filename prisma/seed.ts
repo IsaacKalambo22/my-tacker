@@ -24,6 +24,26 @@ async function main() {
   console.log('✅ Admin user created:', admin.email);
   console.log('🔑 Password: admin123');
 
+  // Create additional test users
+  const testUsers = [
+    { email: 'user@test.com', password: 'user123' },
+    { email: 'demo@example.com', password: 'demo123' },
+    { email: 'john@example.com', password: 'john123' },
+  ];
+
+  for (const userData of testUsers) {
+    const hashedPassword = await hash(userData.password, 10);
+    const user = await prisma.user.upsert({
+      where: { email: userData.email },
+      update: { password: hashedPassword },
+      create: {
+        email: userData.email,
+        password: hashedPassword,
+      },
+    });
+    console.log('✅ Test user created:', user.email);
+  }
+
   // Create sample subject
   const subject = await prisma.subject.create({
     data: {
