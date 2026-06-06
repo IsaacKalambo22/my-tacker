@@ -44,19 +44,20 @@ export function LoginForm({
       if (res?.error) {
         setError("Invalid email or password")
       } else if (res?.ok) {
-        const response = await fetch("/api/auth/session")
-        const session = await response.json()
+        // Fetch user data directly from our API to get role
+        const response = await fetch("/api/auth/user")
+        const userData = await response.json()
         
-        if (session?.user) {
+        if (userData?.user) {
           setUser({
-            id: session.user.id,
-            name: session.user.name,
-            email: session.user.email,
-            role: session.user.role,
-            avatar: session.user.avatar || null,
+            id: userData.user.id,
+            name: userData.user.name,
+            email: userData.user.email,
+            role: userData.user.role,
+            avatar: userData.user.avatar || null,
             createdAt: new Date(),
           })
-          const dashboardPath = getDashboardPath(session.user.role)
+          const dashboardPath = getDashboardPath(userData.user.role)
           router.push(dashboardPath)
           router.refresh()
         } else {
