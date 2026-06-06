@@ -5,6 +5,7 @@ import { compare } from 'bcryptjs';
 import { UserRole } from '@/types/auth';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  trustHost: true,
   pages: {
     signIn: '/login',
   },
