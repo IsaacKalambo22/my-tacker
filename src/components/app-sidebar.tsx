@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { auth } from "@/lib/auth"
 import { useAuthStore } from "@/store/auth-store"
 import { NavMain } from "@/components/nav-main"
 import { NavSecondary } from "@/components/nav-secondary"
@@ -21,19 +20,8 @@ import { UserRole } from "@/types/auth"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useAuthStore()
-  const [menuItems, setMenuItems] = React.useState<RoleMenuItem[]>([])
-  const [userRole, setUserRole] = React.useState<UserRole | null>(null)
-
-  React.useEffect(() => {
-    async function loadSession() {
-      const session = await auth()
-      if (session?.user) {
-        setUserRole(session.user.role as UserRole)
-        setMenuItems(roleMenus[session.user.role as UserRole] || [])
-      }
-    }
-    loadSession()
-  }, [])
+  const userRole = user?.role || null
+  const menuItems = userRole ? roleMenus[userRole] : []
 
   const userData = {
     name: user?.name || "User",

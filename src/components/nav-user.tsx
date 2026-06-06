@@ -1,7 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { signOut } from "@/lib/auth"
+import { signOut } from "next-auth/react"
 import { useAuthStore } from "@/store/auth-store"
 import {
   Avatar,

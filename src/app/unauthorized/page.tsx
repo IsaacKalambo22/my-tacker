@@ -1,9 +1,13 @@
-import { redirect } from "next/navigation"
+"use client"
+
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ShieldAlertIcon } from "lucide-react"
 
 export default function UnauthorizedPage() {
+  const router = useRouter()
+
   return (
     <div className="flex min-h-svh items-center justify-center bg-muted p-6">
       <Card className="max-w-md w-full">
@@ -17,7 +21,7 @@ export default function UnauthorizedPage() {
           <p className="text-muted-foreground">
             You do not have permission to access this page.
           </p>
-          <Button onClick={() => redirect("/dashboard")} className="w-full">
+          <Button onClick={() => router.push("/dashboard")} className="w-full">
             Return to Dashboard
           </Button>
         </CardContent>
