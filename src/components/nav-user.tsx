@@ -1,5 +1,8 @@
 "use client"
 
+import { useRouter } from "next/navigation"
+import { signOut } from "@/lib/auth"
+import { useAuthStore } from "@/store/auth-store"
 import {
   Avatar,
   AvatarFallback,
@@ -29,9 +32,19 @@ export function NavUser({
     name: string
     email: string
     avatar: string
+    role?: string
   }
 }) {
   const { isMobile } = useSidebar()
+  const router = useRouter()
+  const clearUser = useAuthStore((state) => state.clearUser)
+
+  const handleLogout = async () => {
+    await signOut()
+    clearUser()
+    router.push("/login")
+  }
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -71,6 +84,11 @@ export function NavUser({
                     <span className="truncate text-xs text-muted-foreground">
                       {user.email}
                     </span>
+                    {user.role && (
+                      <span className="truncate text-xs text-muted-foreground">
+                        {user.role}
+                      </span>
+                    )}
                   </div>
                 </div>
               </DropdownMenuLabel>
@@ -94,7 +112,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>
               <LogOutIcon
               />
               Log out

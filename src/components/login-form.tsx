@@ -15,12 +15,15 @@ import {
   FieldSeparator,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { getDashboardPath } from "@/lib/role-utils"
+import { useAuthStore } from "@/store/auth-store"
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
   const router = useRouter()
+  const setUser = useAuthStore((state) => state.setUser)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
@@ -39,8 +42,25 @@ export function LoginForm({
       if (res?.error) {
         setError("Invalid email or password")
       } else if (res?.ok) {
-        router.push("/dashboard")
-        router.refresh()
+        const response = await fetch("/api/auth/session")
+        const session = await response.json()
+        
+        if (session?.user) {
+          setUser({
+            id: session.user.id,
+            name: session.user.name,
+            email: session.user.email,
+            role: session.user.role,
+            avatar: session.user.avatar || null,
+            createdAt: new Date(),
+          })
+          const dashboardPath = getDashboardPath(session.user.role)
+          router.push(dashboardPath)
+          router.refresh()
+        } else {
+          router.push("/dashboard")
+          router.refresh()
+        }
       }
     } catch {
       setError("An error occurred during login")

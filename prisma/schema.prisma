@@ -15,10 +15,19 @@ enum Priority {
   Low
 }
 
+enum Role {
+  ADMIN
+  MANAGER
+  LEARNER
+}
+
 model User {
   id        String    @id @default(uuid())
   email     String    @unique
   password  String
+  name      String?
+  role      Role      @default(LEARNER)
+  avatar    String?
   createdAt DateTime  @default(now())
   subjects  Subject[]
 }
