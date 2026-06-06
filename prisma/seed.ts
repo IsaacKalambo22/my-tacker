@@ -18,7 +18,9 @@ async function main() {
     create: {
       email: 'admin@techtracker.com',
       password: hashedPassword,
-    },
+      name: 'Admin User',
+      role: 'ADMIN',
+    } as any,
   });
 
   console.log('✅ Admin user created:', admin.email);
@@ -26,9 +28,9 @@ async function main() {
 
   // Create additional test users
   const testUsers = [
-    { email: 'user@test.com', password: 'user123' },
-    { email: 'demo@example.com', password: 'demo123' },
-    { email: 'john@example.com', password: 'john123' },
+    { email: 'user@test.com', password: 'user123', name: 'Test User', role: 'LEARNER' },
+    { email: 'demo@example.com', password: 'demo123', name: 'Demo User', role: 'MANAGER' },
+    { email: 'john@example.com', password: 'john123', name: 'John Doe', role: 'LEARNER' },
   ];
 
   for (const userData of testUsers) {
@@ -39,7 +41,9 @@ async function main() {
       create: {
         email: userData.email,
         password: hashedPassword,
-      },
+        name: userData.name,
+        role: userData.role as any,
+      } as any,
     });
     console.log('✅ Test user created:', user.email);
   }
