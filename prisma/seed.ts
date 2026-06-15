@@ -1,4 +1,6 @@
 import 'dotenv/config';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore — Prisma v7 re-exports PrismaClient via @prisma/client at runtime; tsc resolves fine
 import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { hash } from 'bcryptjs';

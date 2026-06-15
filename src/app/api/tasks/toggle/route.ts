@@ -3,6 +3,14 @@ import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { toggleTaskSchema } from '@/lib/zod-schemas';
 
+const SubjectStatus = {
+  NotStarted: 'NotStarted',
+  InProgress: 'InProgress',
+  Paused: 'Paused',
+  Completed: 'Completed',
+} as const
+type SubjectStatus = typeof SubjectStatus[keyof typeof SubjectStatus]
+
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
@@ -45,13 +53,36 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Touch subject updatedAt so dashboard "recently updated" reflects activity
-    await prisma.subject.update({
-      where: { id: task.phase.subject.id },
-      data: { updatedAt: new Date() },
-    });
+    // Auto-advance subject status based on overall task completion
+    const subject = task.phase.subject
+    const allTasks = await prisma.task.findMany({
+      where: { phase: { subjectId: subject.id } },
+    })
+    const totalTasks = allTasks.length
+    const doneTasks = allTasks.filter((t: { id: string; completed: boolean }) =>
+      t.id === validated.taskId ? validated.completed : t.completed
+    ).length
 
-    return NextResponse.json(updatedTask);
+    let newStatus: SubjectStatus | undefined  
+    if (doneTasks === 0 && subject.status === SubjectStatus.InProgress) {
+      newStatus = SubjectStatus.NotStarted
+    } else if (doneTasks > 0 && doneTasks < totalTasks && subject.status === SubjectStatus.NotStarted) {
+      newStatus = SubjectStatus.InProgress
+    } else if (doneTasks === totalTasks) {
+      newStatus = SubjectStatus.Completed
+    } else if (doneTasks > 0 && doneTasks < totalTasks && subject.status === SubjectStatus.Completed) {
+      newStatus = SubjectStatus.InProgress
+    }
+
+    await prisma.subject.update({
+      where: { id: subject.id },
+      data: {
+        updatedAt: new Date(),
+        ...(newStatus ? { status: newStatus } : {}),
+      },
+    })
+
+    return NextResponse.json({ task: updatedTask, statusChanged: newStatus ?? null });
   } catch (error: any) {
     if (error.name === 'ZodError') {
       return NextResponse.json(

@@ -17,6 +17,7 @@ import {
   ArrowLeftIcon,
   CalendarIcon,
   CheckCircleIcon,
+  ChevronDownIcon,
   CircleIcon,
   LayersIcon,
   TargetIcon,
@@ -85,12 +86,37 @@ interface SubjectDetailClientProps {
   subject: SubjectDetail
 }
 
+const STATUS_OPTIONS = [
+  { value: "NotStarted", label: "Not Started" },
+  { value: "InProgress", label: "In Progress" },
+  { value: "Paused",     label: "Paused" },
+  { value: "Completed",  label: "Completed" },
+]
+
+const STATUS_COLOR: Record<string, string> = {
+  NotStarted: "text-muted-foreground",
+  InProgress: "text-blue-600 dark:text-blue-400",
+  Paused:     "text-yellow-600 dark:text-yellow-400",
+  Completed:  "text-green-600 dark:text-green-400",
+}
+
 export function SubjectDetailClient({ subject: initial }: SubjectDetailClientProps) {
   const router = useRouter()
   const [phases, setPhases] = useState<Phase[]>(initial.phases)
+  const [status, setStatus] = useState<string>(initial.status)
   const [pending, startTransition] = useTransition()
 
   const subjectProgress = calcSubjectProgress(phases)
+
+  const changeStatus = async (newStatus: string) => {
+    setStatus(newStatus)
+    await fetch(`/api/subjects/${initial.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: newStatus }),
+    })
+    startTransition(() => router.refresh())
+  }
 
   const toggleTask = async (taskId: string, completed: boolean) => {
     setPhases((prev) =>
@@ -118,6 +144,8 @@ export function SubjectDetailClient({ subject: initial }: SubjectDetailClientPro
           }))
         )
       } else {
+        const data = await res.json()
+        if (data.statusChanged) setStatus(data.statusChanged)
         startTransition(() => router.refresh())
       }
     } catch {
@@ -149,10 +177,19 @@ export function SubjectDetailClient({ subject: initial }: SubjectDetailClientPro
             {initial.description && (
               <p className="text-sm text-muted-foreground">{initial.description}</p>
             )}
-            <div className="flex flex-wrap gap-1.5 pt-0.5">
-              <Badge variant={STATUS_VARIANT[initial.status] ?? "outline"}>
-                {STATUS_LABEL[initial.status] ?? initial.status}
-              </Badge>
+            <div className="flex flex-wrap gap-1.5 pt-0.5 items-center">
+              <div className="relative">
+                <select
+                  value={status}
+                  onChange={(e) => changeStatus(e.target.value)}
+                  className={`appearance-none text-xs font-medium rounded-full border px-3 py-1 pr-7 bg-background cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring ${STATUS_COLOR[status] ?? "text-muted-foreground"}`}
+                >
+                  {STATUS_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
+                <ChevronDownIcon className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 size-3 opacity-60" />
+              </div>
               <Badge variant={PRIORITY_VARIANT[initial.priority] ?? "outline"}>
                 {initial.priority} Priority
               </Badge>
@@ -175,7 +212,7 @@ export function SubjectDetailClient({ subject: initial }: SubjectDetailClientPro
           </div>
         </div>
 
-        <Progress value={subjectProgress.pct} className="h-2" />
+        <Progress value={subjectProgress.pct} className="h-2" indicatorClassName={subjectProgress.pct === 100 ? "bg-green-500" : "bg-green-400"} />
       </div>
 
       {/* Overall Phase Summary */}
@@ -186,18 +223,18 @@ export function SubjectDetailClient({ subject: initial }: SubjectDetailClientPro
           return (
             <div
               key={phase.id}
-              className={`rounded-lg border p-3 space-y-1.5 ${isComplete ? "border-primary/40 bg-primary/5" : ""}`}
+              className={`rounded-lg border p-3 space-y-1.5 ${isComplete ? "border-green-400/40 bg-green-500/5" : ""}`}
             >
               <div className="flex items-center gap-1.5">
                 {isComplete ? (
-                  <CheckCircleIcon className="size-3.5 text-primary shrink-0" />
+                  <CheckCircleIcon className="size-3.5 text-green-500 shrink-0" />
                 ) : (
                   <CircleIcon className="size-3.5 text-muted-foreground shrink-0" />
                 )}
                 <span className="text-xs font-medium leading-tight line-clamp-2">{phase.name}</span>
               </div>
-              <Progress value={pct} className="h-1" />
-              <p className="text-xs text-muted-foreground">{done}/{total}</p>
+              <Progress value={pct} className="h-1" indicatorClassName={isComplete ? "bg-green-500" : "bg-green-400"} />
+              <p className={`text-xs ${isComplete ? "text-green-600 dark:text-green-400" : "text-muted-foreground"}`}>{done}/{total}</p>
             </div>
           )
         })}
@@ -210,13 +247,13 @@ export function SubjectDetailClient({ subject: initial }: SubjectDetailClientPro
           const isComplete = pct === 100
 
           return (
-            <Card key={phase.id} className={isComplete ? "border-primary/30" : ""}>
+            <Card key={phase.id} className={isComplete ? "border-green-400/40 dark:border-green-500/30" : ""}>
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-2 min-w-0">
                     <div className={`flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
                       isComplete
-                        ? "bg-primary text-primary-foreground"
+                        ? "bg-green-500 text-white"
                         : "bg-muted text-muted-foreground"
                     }`}>
                       {phaseIndex + 1}
@@ -225,28 +262,30 @@ export function SubjectDetailClient({ subject: initial }: SubjectDetailClientPro
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     <span className="text-xs text-muted-foreground">{done}/{total}</span>
-                    <Badge variant={isComplete ? "default" : "outline"} className="text-xs">
+                    <Badge variant="outline" className={`text-xs ${isComplete ? "border-green-400 text-green-600 dark:text-green-400" : ""}`}>
                       {pct}%
                     </Badge>
                   </div>
                 </div>
-                <Progress value={pct} className="h-1 mt-2" />
+                <Progress value={pct} className="h-1 mt-2" indicatorClassName={isComplete ? "bg-green-500" : "bg-green-400"} />
               </CardHeader>
 
               <CardContent className="space-y-1.5">
                 {phase.tasks.map((task) => (
                   <label
                     key={task.id}
-                    className={`flex items-start gap-3 rounded-md px-3 py-2 cursor-pointer hover:bg-muted/50 transition-colors ${
-                      task.completed ? "opacity-60" : ""
-                    }`}
+                    className="flex items-start gap-3 rounded-md px-3 py-2 cursor-pointer hover:bg-muted/50 transition-colors"
                   >
                     <Checkbox
                       checked={task.completed}
                       onCheckedChange={(checked) => toggleTask(task.id, checked === true)}
-                      className="mt-0.5 shrink-0"
+                      className={`mt-0.5 shrink-0 ${task.completed ? "border-green-500 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500" : ""}`}
                     />
-                    <span className={`text-sm leading-snug ${task.completed ? "line-through text-muted-foreground" : ""}`}>
+                    <span className={`text-sm leading-snug ${
+                      task.completed
+                        ? "line-through text-muted-foreground"
+                        : ""
+                    }`}>
                       {task.text}
                     </span>
                   </label>
@@ -259,9 +298,9 @@ export function SubjectDetailClient({ subject: initial }: SubjectDetailClientPro
 
       {/* Completion Message */}
       {subjectProgress.pct === 100 && (
-        <Card className="border-primary bg-primary/5">
+        <Card className="border-green-400/50 bg-green-500/5">
           <CardContent className="py-8 text-center space-y-2">
-            <CheckCircleIcon className="size-10 text-primary mx-auto" />
+            <CheckCircleIcon className="size-10 text-green-500 mx-auto" />
             <h3 className="font-semibold text-lg">Subject Complete!</h3>
             <p className="text-sm text-muted-foreground">
               You have completed all {subjectProgress.total} tasks in <strong>{initial.name}</strong>.

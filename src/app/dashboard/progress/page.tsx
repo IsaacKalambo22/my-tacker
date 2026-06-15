@@ -193,8 +193,8 @@ export default async function ProgressPage() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2 mt-1">
-                        <Progress value={pct} className="h-1.5 flex-1" />
-                        <span className="text-sm font-semibold tabular-nums shrink-0">{pct}%</span>
+                        <Progress value={pct} className="h-1.5 flex-1" indicatorClassName={pct === 100 ? "bg-green-500" : "bg-green-400"} />
+                        <span className={`text-sm font-semibold tabular-nums shrink-0 ${pct === 100 ? "text-green-600 dark:text-green-400" : "text-green-500"}`}>{pct}%</span>
                         <span className="text-xs text-muted-foreground shrink-0">{done}/{total}</span>
                       </div>
                     </CardHeader>
@@ -209,15 +209,15 @@ export default async function ProgressPage() {
                         return (
                           <div key={phase.id} className="flex items-center gap-3">
                             {complete ? (
-                              <CheckCircleIcon className="size-3.5 text-primary shrink-0" />
+                              <CheckCircleIcon className="size-3.5 text-green-500 shrink-0" />
                             ) : (
                               <CircleIcon className="size-3.5 text-muted-foreground shrink-0" />
                             )}
-                            <span className="text-sm w-40 shrink-0 truncate text-muted-foreground">
+                            <span className={`text-sm w-40 shrink-0 truncate ${complete ? "text-green-600 dark:text-green-400 font-medium" : "text-muted-foreground"}`}>
                               {phase.name}
                             </span>
-                            <Progress value={ppct} className="h-1 flex-1" />
-                            <span className="text-xs tabular-nums w-16 text-right shrink-0 text-muted-foreground">
+                            <Progress value={ppct} className="h-1 flex-1" indicatorClassName={complete ? "bg-green-500" : "bg-green-400"} />
+                            <span className={`text-xs tabular-nums w-16 text-right shrink-0 ${complete ? "text-green-600 dark:text-green-400 font-medium" : "text-green-500"}`}>
                               {pd}/{pt} ({ppct}%)
                             </span>
                           </div>
