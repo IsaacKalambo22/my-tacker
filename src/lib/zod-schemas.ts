@@ -2,7 +2,11 @@ import { z } from 'zod';
 
 export const createSubjectSchema = z.object({
   name: z.string().min(1, 'Subject name is required'),
+  description: z.string().optional(),
+  category: z.string().optional(),
+  difficulty: z.enum(['Beginner', 'Intermediate', 'Advanced']).optional(),
   priority: z.enum(['High', 'Medium', 'Low']),
+  status: z.enum(['NotStarted', 'InProgress', 'Paused', 'Completed']).default('NotStarted'),
   targetDate: z.string().optional(),
 });
 

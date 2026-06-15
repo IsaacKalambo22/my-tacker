@@ -45,6 +45,12 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    // Touch subject updatedAt so dashboard "recently updated" reflects activity
+    await prisma.subject.update({
+      where: { id: task.phase.subject.id },
+      data: { updatedAt: new Date() },
+    });
+
     return NextResponse.json(updatedTask);
   } catch (error: any) {
     if (error.name === 'ZodError') {

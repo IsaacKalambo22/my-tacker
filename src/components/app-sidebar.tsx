@@ -14,7 +14,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { CommandIcon } from "lucide-react"
+import { GraduationCapIcon } from "lucide-react"
 import { roleMenus, secondaryMenus, type RoleMenuItem } from "@/lib/role-menu"
 import { UserRole } from "@/types/auth"
 
@@ -39,8 +39,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:p-1.5!"
               render={<a href="#" />}
             >
-              <CommandIcon className="size-5!" />
-              <span className="text-base font-semibold">Tech Tracker</span>
+              <GraduationCapIcon className="size-5!" />
+              <span className="text-base font-semibold">Learn Tracker</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

@@ -21,6 +21,13 @@ enum Role {
   LEARNER
 }
 
+enum SubjectStatus {
+  NotStarted
+  InProgress
+  Paused
+  Completed
+}
+
 model User {
   id        String    @id @default(uuid())
   email     String    @unique
@@ -33,16 +40,20 @@ model User {
 }
 
 model Subject {
-  id         String    @id @default(uuid())
-  name       String
-  priority   Priority  @default(Medium)
-  targetDate DateTime?
-  startDate  DateTime  @default(now())
-  userId     String
-  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  phases     Phase[]
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  id          String        @id @default(uuid())
+  name        String
+  description String?
+  category    String?
+  difficulty  String?
+  priority    Priority      @default(Medium)
+  status      SubjectStatus @default(NotStarted)
+  targetDate  DateTime?
+  startDate   DateTime      @default(now())
+  userId      String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  phases      Phase[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 
   @@index([userId])
 }

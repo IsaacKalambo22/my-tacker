@@ -60,7 +60,11 @@ export async function POST(request: NextRequest) {
     const subject = await prisma.subject.create({
       data: {
         name: validated.name,
+        description: validated.description,
+        category: validated.category,
+        difficulty: validated.difficulty,
         priority: validated.priority,
+        status: validated.status,
         targetDate: validated.targetDate ? new Date(validated.targetDate) : null,
         userId: session.user.id,
         phases: {

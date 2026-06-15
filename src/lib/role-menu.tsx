@@ -1,18 +1,14 @@
 import { UserRole } from "@/types/auth"
 import { 
   LayoutDashboardIcon, 
-  ListIcon, 
-  ChartBarIcon, 
-  FolderIcon, 
-  UsersIcon, 
-  Settings2Icon, 
-  CircleHelpIcon, 
-  SearchIcon,
   BookOpenIcon,
   GraduationCapIcon,
   TrendingUpIcon,
-  ShieldIcon,
-  FileTextIcon
+  ChartBarIcon,
+  UsersIcon, 
+  Settings2Icon, 
+  MapIcon,
+  StarIcon,
 } from "lucide-react"
 
 export interface RoleMenuItem {
@@ -29,12 +25,7 @@ export const roleMenus: Record<UserRole, RoleMenuItem[]> = {
       icon: <LayoutDashboardIcon />
     },
     {
-      title: "Users",
-      url: "/dashboard/users",
-      icon: <UsersIcon />
-    },
-    {
-      title: "Subjects",
+      title: "Learning Subjects",
       url: "/dashboard/subjects",
       icon: <BookOpenIcon />
     },
@@ -44,14 +35,9 @@ export const roleMenus: Record<UserRole, RoleMenuItem[]> = {
       icon: <ChartBarIcon />
     },
     {
-      title: "Reports",
-      url: "/dashboard/reports",
-      icon: <FileTextIcon />
-    },
-    {
-      title: "Settings",
-      url: "/dashboard/settings",
-      icon: <Settings2Icon />
+      title: "Users",
+      url: "/dashboard/users",
+      icon: <UsersIcon />
     },
   ],
   [UserRole.MANAGER]: [
@@ -61,24 +47,19 @@ export const roleMenus: Record<UserRole, RoleMenuItem[]> = {
       icon: <LayoutDashboardIcon />
     },
     {
-      title: "Team",
-      url: "/dashboard/team",
-      icon: <UsersIcon />
+      title: "Learning Subjects",
+      url: "/dashboard/subjects",
+      icon: <BookOpenIcon />
     },
     {
-      title: "Progress",
+      title: "Progress Tracking",
       url: "/dashboard/progress",
       icon: <TrendingUpIcon />
     },
     {
-      title: "Reports",
-      url: "/dashboard/reports",
-      icon: <FileTextIcon />
-    },
-    {
-      title: "Settings",
-      url: "/dashboard/settings",
-      icon: <Settings2Icon />
+      title: "Analytics",
+      url: "/dashboard/analytics",
+      icon: <ChartBarIcon />
     },
   ],
   [UserRole.LEARNER]: [
@@ -88,24 +69,24 @@ export const roleMenus: Record<UserRole, RoleMenuItem[]> = {
       icon: <LayoutDashboardIcon />
     },
     {
-      title: "My Subjects",
+      title: "Learning Subjects",
       url: "/dashboard/subjects",
       icon: <BookOpenIcon />
     },
     {
-      title: "Learning Path",
+      title: "Roadmaps",
       url: "/dashboard/learning-path",
-      icon: <GraduationCapIcon />
+      icon: <MapIcon />
     },
     {
-      title: "Progress",
+      title: "Progress Tracking",
       url: "/dashboard/progress",
       icon: <TrendingUpIcon />
     },
     {
-      title: "Profile",
-      url: "/dashboard/profile",
-      icon: <CircleHelpIcon />
+      title: "Achievements",
+      url: "/dashboard/achievements",
+      icon: <StarIcon />
     },
   ],
 }
@@ -115,15 +96,5 @@ export const secondaryMenus: RoleMenuItem[] = [
     title: "Settings",
     url: "/dashboard/settings",
     icon: <Settings2Icon />
-  },
-  {
-    title: "Get Help",
-    url: "/dashboard/help",
-    icon: <CircleHelpIcon />
-  },
-  {
-    title: "Search",
-    url: "/dashboard/search",
-    icon: <SearchIcon />
   },
 ]
