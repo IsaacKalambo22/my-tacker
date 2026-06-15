@@ -14,12 +14,20 @@ interface SubjectRow {
   phases: PhaseRow[]
 }
 
+interface SubjectGroup { status: string; _count: { _all: number } }
+interface TaskGroup { completed: boolean; _count: { _all: number } }
+
 async function getPlatformStats() {
-  const totalSubjects = await prisma.subject.count()
-  const completedSubjects = await prisma.subject.count({ where: { status: "Completed" } })
-  const inProgressSubjects = await prisma.subject.count({ where: { status: "InProgress" } })
-  const totalTasks = await prisma.task.count()
-  const completedTasks = await prisma.task.count({ where: { completed: true } })
+  const [subjectGroups, taskGroups] = await Promise.all([
+    prisma.subject.groupBy({ by: ["status"], _count: { _all: true } }) as Promise<SubjectGroup[]>,
+    prisma.task.groupBy({ by: ["completed"], _count: { _all: true } }) as Promise<TaskGroup[]>,
+  ])
+
+  const totalSubjects = subjectGroups.reduce((s: number, g: SubjectGroup) => s + g._count._all, 0)
+  const completedSubjects = subjectGroups.find((g: SubjectGroup) => g.status === "Completed")?._count._all ?? 0
+  const inProgressSubjects = subjectGroups.find((g: SubjectGroup) => g.status === "InProgress")?._count._all ?? 0
+  const totalTasks = taskGroups.reduce((s: number, g: TaskGroup) => s + g._count._all, 0)
+  const completedTasks = taskGroups.find((g: TaskGroup) => g.completed)?._count._all ?? 0
   const overallProgress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0
 
   return { totalSubjects, completedSubjects, inProgressSubjects, totalTasks, completedTasks, overallProgress }

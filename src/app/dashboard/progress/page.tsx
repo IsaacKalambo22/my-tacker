@@ -46,9 +46,24 @@ export default async function ProgressPage() {
   if (role === UserRole.MANAGER || role === UserRole.ADMIN) {
     const learners = await prisma.user.findMany({
       where: { role: "LEARNER" },
-      include: {
+      select: {
+        id: true,
+        name: true,
+        email: true,
         subjects: {
-          include: { phases: { include: { tasks: true } } },
+          select: {
+            id: true,
+            name: true,
+            status: true,
+            priority: true,
+            phases: {
+              select: {
+                id: true,
+                name: true,
+                tasks: { select: { completed: true } },
+              },
+            },
+          },
         },
       },
       orderBy: { name: "asc" },
