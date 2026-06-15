@@ -18,10 +18,12 @@ interface SubjectGroup { status: string; _count: { _all: number } }
 interface TaskGroup { completed: boolean; _count: { _all: number } }
 
 async function getPlatformStats() {
-  const [subjectGroups, taskGroups] = await Promise.all([
-    prisma.subject.groupBy({ by: ["status"], _count: { _all: true } }) as Promise<SubjectGroup[]>,
-    prisma.task.groupBy({ by: ["completed"], _count: { _all: true } }) as Promise<TaskGroup[]>,
+  const [subjectGroupsRaw, taskGroupsRaw] = await Promise.all([
+    prisma.subject.groupBy({ by: ["status"], _count: { _all: true } }),
+    prisma.task.groupBy({ by: ["completed"], _count: { _all: true } }),
   ])
+  const subjectGroups = subjectGroupsRaw as unknown as SubjectGroup[]
+  const taskGroups = taskGroupsRaw as unknown as TaskGroup[]
 
   const totalSubjects = subjectGroups.reduce((s: number, g: SubjectGroup) => s + g._count._all, 0)
   const completedSubjects = subjectGroups.find((g: SubjectGroup) => g.status === "Completed")?._count._all ?? 0
