@@ -77,7 +77,11 @@ const STATUS_VARIANT: Record<string, "default" | "secondary" | "outline" | "dest
   NotStarted: "outline",
   InProgress: "default",
   Paused: "secondary",
-  Completed: "default",
+  Completed: "outline",
+}
+
+const STATUS_CLASS: Record<string, string> = {
+  Completed: "border-green-500 text-green-600 dark:text-green-400",
 }
 
 function OverviewCards({ data }: { data: DashboardData }) {
@@ -222,7 +226,7 @@ function LearnerSections({ data }: { data: DashboardData }) {
                 <Link key={s.id} href={`/dashboard/subjects/${s.id}`} className="block">
                   <div className="flex items-center justify-between rounded-lg border p-3 hover:bg-muted/50 transition-colors">
                     <span className="text-sm font-medium truncate mr-2">{s.name}</span>
-                    <Badge variant={STATUS_VARIANT[s.status] ?? "outline"} className="text-xs shrink-0">
+                    <Badge variant={STATUS_VARIANT[s.status] ?? "outline"} className={`text-xs shrink-0 ${STATUS_CLASS[s.status] ?? ""}`}>
                       {STATUS_LABELS[s.status] ?? s.status}
                     </Badge>
                   </div>
