@@ -1,12 +1,14 @@
 "use client"
 
 import { useState } from "react"
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { ArrowLeftIcon, CheckCircleIcon } from "lucide-react"
 import Link from "next/link"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("")
@@ -28,12 +30,16 @@ export default function ForgotPasswordPage() {
 
       if (response.ok) {
         setSuccess(true)
+        toast.success("Reset link sent", { description: `Check your inbox at ${email}` })
       } else {
         const data = await response.json()
-        setError(data.error || "Failed to send reset email")
+        const msg = data.error || "Failed to send reset email"
+        setError(msg)
+        toast.error("Failed to send reset link", { description: msg })
       }
     } catch {
       setError("An error occurred. Please try again.")
+      toast.error("Something went wrong", { description: "Please try again" })
     } finally {
       setLoading(false)
     }
@@ -41,7 +47,8 @@ export default function ForgotPasswordPage() {
 
   if (success) {
     return (
-      <div className="flex min-h-svh items-center justify-center bg-muted p-6">
+      <div className="relative flex min-h-svh items-center justify-center bg-muted p-6">
+        <div className="absolute top-4 right-4"><ThemeToggle /></div>
         <Card className="max-w-md w-full">
           <CardHeader className="text-center">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/20">
@@ -67,7 +74,8 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="flex min-h-svh items-center justify-center bg-muted p-6">
+    <div className="relative flex min-h-svh items-center justify-center bg-muted p-6">
+      <div className="absolute top-4 right-4"><ThemeToggle /></div>
       <Card className="max-w-md w-full">
         <CardHeader>
           <CardTitle className="text-2xl">Forgot password?</CardTitle>

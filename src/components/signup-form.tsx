@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { signIn } from "next-auth/react"
 import Link from "next/link"
+import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -32,10 +33,12 @@ export function SignupForm({
 
     if (password !== confirmPassword) {
       setError("Passwords do not match")
+      toast.error("Passwords do not match")
       return
     }
     if (password.length < 6) {
       setError("Password must be at least 6 characters")
+      toast.error("Password too short", { description: "Must be at least 6 characters" })
       return
     }
 
@@ -48,7 +51,9 @@ export function SignupForm({
       })
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
-        setError(data.error || "Failed to create account")
+        const msg = data.error || "Failed to create account"
+        setError(msg)
+        toast.error("Sign up failed", { description: msg })
         setLoading(false)
         return
       }
@@ -59,12 +64,15 @@ export function SignupForm({
       })
       if (signInRes?.error) {
         setError("Account created but failed to sign in")
+        toast.error("Account created", { description: "Please log in manually" })
       } else if (signInRes?.ok) {
+        toast.success("Account created!", { description: "Welcome to Learn Tracker" })
         router.push("/dashboard")
         router.refresh()
       }
     } catch {
       setError("An error occurred during sign up")
+      toast.error("Something went wrong", { description: "Please try again" })
     } finally {
       setLoading(false)
     }
@@ -79,7 +87,7 @@ export function SignupForm({
               <div className="flex flex-col items-center gap-2 text-center">
                 <h1 className="text-2xl font-bold">Create an account</h1>
                 <p className="text-balance text-muted-foreground">
-                  Sign up for your Tech Tracker account
+                  Sign up for your Learn Tracker account
                 </p>
               </div>
               {error && (

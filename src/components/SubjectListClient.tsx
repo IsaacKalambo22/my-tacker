@@ -67,7 +67,11 @@ const STATUS_VARIANT: Record<string, "default" | "secondary" | "outline" | "dest
   NotStarted: "outline",
   InProgress: "default",
   Paused: "secondary",
-  Completed: "default",
+  Completed: "outline",
+}
+
+const STATUS_CLASS: Record<string, string> = {
+  Completed: "border-green-500 text-green-600 dark:text-green-400",
 }
 
 const PRIORITY_VARIANT: Record<string, "default" | "secondary" | "outline" | "destructive"> = {
@@ -337,7 +341,7 @@ export function SubjectListClient({ subjects: initialSubjects, isAdmin }: Subjec
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between gap-2">
                     <CardTitle className="text-base leading-snug line-clamp-2">{subject.name}</CardTitle>
-                    <Badge variant={STATUS_VARIANT[subject.status] ?? "outline"} className="text-xs shrink-0">
+                    <Badge variant={STATUS_VARIANT[subject.status] ?? "outline"} className={`text-xs shrink-0 ${STATUS_CLASS[subject.status] ?? ""}`}>
                       {STATUS_LABEL[subject.status] ?? subject.status}
                     </Badge>
                   </div>
@@ -382,7 +386,7 @@ export function SubjectListClient({ subjects: initialSubjects, isAdmin }: Subjec
                       </span>
                     )}
                     {progress === 100 && (
-                      <span className="flex items-center gap-1 text-primary">
+                      <span className="flex items-center gap-1 text-green-600 dark:text-green-400">
                         <CheckCircleIcon className="size-3" />
                         Done
                       </span>

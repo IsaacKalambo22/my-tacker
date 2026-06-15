@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { signIn } from "next-auth/react"
 import Link from "next/link"
+import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -43,11 +44,11 @@ export function LoginForm({
       })
       if (res?.error) {
         setError("Invalid email or password")
+        toast.error("Login failed", { description: "Invalid email or password" })
       } else if (res?.ok) {
-        // Fetch user data directly from our API to get role
+        toast.success("Welcome back!", { description: "Redirecting to your dashboard..." })
         const response = await fetch("/api/auth/user")
         const userData = await response.json()
-        
         if (userData?.user) {
           setUser({
             id: userData.user.id,
@@ -67,6 +68,7 @@ export function LoginForm({
       }
     } catch {
       setError("An error occurred during login")
+      toast.error("Something went wrong", { description: "Please try again" })
     } finally {
       setLoading(false)
     }

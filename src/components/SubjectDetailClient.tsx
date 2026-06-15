@@ -279,7 +279,7 @@ export function SubjectDetailClient({ subject: initial }: SubjectDetailClientPro
                     <Checkbox
                       checked={task.completed}
                       onCheckedChange={(checked) => toggleTask(task.id, checked === true)}
-                      className={`mt-0.5 shrink-0 ${task.completed ? "border-green-500 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500" : ""}`}
+                      className="mt-0.5 shrink-0"
                     />
                     <span className={`text-sm leading-snug ${
                       task.completed
